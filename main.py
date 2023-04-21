@@ -19,10 +19,10 @@ parser.add_argument('--mode', default="files", help='PR interpretation form. Opt
 args = parser.parse_args()
 
 ## Authenticating with the OpenAI API
-openai.api_key = "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"
+openai.api_key = args.openai_api_key
 
 ## Authenticating with the Github API
-g = Github("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")
+g = Github(args.github_token)
 print(g.get_user().repos_url)
 
 
