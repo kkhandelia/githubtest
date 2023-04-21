@@ -9,7 +9,7 @@ jobs:
     name: ChatGPT explain code
     steps:
       - name: ChatGTP explain code
-        uses: kkhandelia/githubtest
+        uses: ./
         with:
           openai_api_key: ${{ secrets.openai_api_key }}
           github_token: "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"
