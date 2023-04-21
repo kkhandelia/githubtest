@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     name: ChatGPT explain code
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: ChatGTP explain code
         uses: ./
         with:
