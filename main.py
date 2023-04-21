@@ -22,7 +22,7 @@ args = parser.parse_args()
 openai.api_key = "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"
 
 ## Authenticating with the Github API
-g = Github("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")
+g = Github("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")
 print(g.get_user().repos_url)
 
 
