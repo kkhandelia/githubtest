@@ -19,18 +19,19 @@ parser.add_argument('--mode', default="files", help='PR interpretation form. Opt
 args = parser.parse_args()
 
 ## Authenticating with the OpenAI API
-openai.api_key = args.openai_api_key
+openai.api_key = "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"
 
 ## Authenticating with the Github API
-g = Github(args.github_token)
+g = Github("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")
+print(g.get_user().repos_url)
 
 
 def files():
-    repo = g.get_repo(os.getenv('GITHUB_REPOSITORY'))
-    pull_request = repo.get_pull(int(args.github_pr_id))
+    repo = g.get_repo("kkhandelia/githubtest")
+   # pull_request = repo.get_pull(int(args.github_pr_id))
 
     ## Loop through the commits in the pull request
-    commits = pull_request.get_commits()
+    commits = repo.get_commits()
     for commit in commits:
         # Getting the modified files in the commit
         files = commit.files
@@ -38,6 +39,9 @@ def files():
             # Getting the file name and content
             filename = file.filename
             content = repo.get_contents(filename, ref=commit.sha).decoded_content
+
+            print(filename)
+            print(content)
 
             # Sending the code to ChatGPT
             response = openai.Completion.create(
@@ -47,22 +51,26 @@ def files():
                 max_tokens=int(args.openai_max_tokens)
             )
 
+            print(response['choices'][0]['text'])
+        break
+
             # Adding a comment to the pull request with ChatGPT's response
-            pull_request.create_issue_comment(
-                f"ChatGPT's response about `{file.filename}`:\n {response['choices'][0]['text']}")
+          #  pull_request.create_issue_comment(
+            #    f"ChatGPT's response about `{file.filename}`:\n {response['choices'][0]['text']}")
 
 
 def patch():
-    repo = g.get_repo(os.getenv('GITHUB_REPOSITORY'))
-    pull_request = repo.get_pull(int(args.github_pr_id))
+    repo = g.get_repo('kkhandelia/githubtest')
+    #pull_request = repo.get_pull(int(args.github_pr_id))
 
     content = get_content_patch()
 
     if len(content) == 0:
-        pull_request.create_issue_comment(f"Patch file does not contain any changes")
+        #pull_request.create_issue_comment(f"Patch file does not contain any changes")
         return
 
     parsed_text = content.split("diff")
+    print(parsed_text)
 
     for diff_text in parsed_text:
         if len(diff_text) == 0:
@@ -70,7 +78,7 @@ def patch():
 
         try:
             file_name = diff_text.split("b/")[1].splitlines()[0]
-            print(file_name)
+            #print(file_name)
 
             response = openai.Completion.create(
                 engine=args.openai_engine,
@@ -78,23 +86,23 @@ def patch():
                 temperature=float(args.openai_temperature),
                 max_tokens=int(args.openai_max_tokens)
             )
-            print(response)
+            #print(response)
             print(response['choices'][0]['text'])
 
-            pull_request.create_issue_comment(
-                f"ChatGPT's response about ``{file_name}``:\n {response['choices'][0]['text']}")
+            #pull_request.create_issue_comment(
+            #    f"ChatGPT's response about ``{file_name}``:\n {response['choices'][0]['text']}")
         except Exception as e:
             error_message = str(e)
-            print(error_message)
-            pull_request.create_issue_comment(f"ChatGPT was unable to process the response about {file_name}")
+            print("error is reported")
+            #pull_request.create_issue_comment(f"ChatGPT was unable to process the response about {file_name}")
 
 
 def get_content_patch():
-    url = f"https://api.github.com/repos/{os.getenv('GITHUB_REPOSITORY')}/pulls/{args.github_pr_id}"
+    url = f"https://api.github.com/repos/{'kkhandelia/githubtest'}/commits/{'79596e71d6e79755decee76b80b126bd54394066'}"
     print(url)
 
     headers = {
-        'Authorization': f"token {args.github_token}",
+        'Authorization': f"token {'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'}",
         'Accept': 'application/vnd.github.v3.diff'
     }
 
@@ -106,8 +114,8 @@ def get_content_patch():
     return response.text
 
 
-if (args.mode == "files"):
-    files()
+#if (args.mode == "files"):
+files()
 
-if (args.mode == "patch"):
-    patch()
+#if (args.mode == "patch"):
+#patch()

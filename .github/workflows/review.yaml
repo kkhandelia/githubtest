@@ -14,7 +14,7 @@ jobs:
         uses: ./
         with:
           openai_api_key: ${{ secrets.openai_api_key }}
-          github_token: "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"
+          github_token: "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"
           github_commit_id: ${{ github.event.push_id }}
           openai_engine: "text-davinci-002" #optional
           openai_temperature: 0.5 #optional
